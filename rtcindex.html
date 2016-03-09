@@ -3,16 +3,14 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link href="/libs/bs/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="/libs/jquery-ui-1.11.4/jquery-ui.min.css" rel="stylesheet" />
-    <link href="/libs/angular-chart/angular-chart.min.css" rel="stylesheet" />
+    <link href="/libs/bs/css/bootstrap.min.css" rel="stylesheet"/>
     <title>网络视频聊天室-demo版</title>
     <style>
         #users {
             position: absolute;
             top: 0px;
             right: 0px;
-            bottom: 0px;
+            bottom: 230px;
             width: 300px;
             background: #ebedc0;
         }
@@ -32,57 +30,88 @@
         }
 
         .currentuser {
-            border:1px solid #006dcc;
+            border: 1px solid #006dcc;
         }
+
         #media {
             position: absolute;
             top: 0px;
             left: 0px;
             bottom: 0px;
             right: 300px;
-            background:#dbc4e2;
+            background: #dbc4e2;
         }
+
         #media h2 {
-            position:absolute;
+            position: absolute;
 
         }
+
         video {
-            width:100%;
-            height:100%;
+            width: 100%;
+            height: 100%;
         }
+
         #me {
-            position:absolute;
-            bottom:0px;
-            right:0px;
-            width:300px;
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: 300px;
         }
+
         .label-blue {
-            color:#fff;
+            color: #fff;
             background-color: #002a80;
+        }
+
+        .hp100 {
+            height: 100%;
         }
     </style>
 </head>
 <body ng-controller="rtcCtl">
-    <div id="media">
-        <h2>{{playinguser.name}}</h2>
-    </div>
-    <div id="users">
-        <div ng-repeat="u in users" class="user" ng-class="{true:'currentuser',false:''}[u.name==$parent.currentuser.name]">
-            <div>
-                <span class="label label-blue" ng-show="u.online">在线</span>
-                <span class="label label-blue" ng-show="u==$parent.playinguser">播放中</span>
-                <span ng-class="{true:'online',false:''}[u.online==true]">{{u.name}}</span>
-                <span class="label label-primary">{{u.zhuchi?"主":""}}</span>
-                <span class="label label-success">{{u.playing?"麦":""}}</span><br/>
+<div id="media">
+    <h2>当前播放：{{playinguser.name}}</h2>
+</div>
+<div id="users">
+    <ul class="nav nav-tabs" role="tablist" ng-init="tab='userlist'">
+        <li role="presentation" class="active"><a href="javascript:void(0)" ng-click="tab='userlist'"
+                                                  aria-controls="userlist" role="tab" data-toggle="tab">用户</a></li>
+        <li role="presentation"><a href="javascript:void(0)" ng-click="tab='chat'" aria-controls="chat" role="tab"
+                                   data-toggle="tab">交流</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" ng-class="{true:'active',false:''}[tab=='userlist']" class="tab-pane" id="userlist">
+            <div ng-repeat="u in users" class="user"
+                 ng-class="{true:'currentuser',false:''}[u.name==$parent.currentuser.name]">
+                <div>
+                    <span class="label label-blue" ng-show="u.online">在线</span>
+                    <span class="label label-blue" ng-show="u==$parent.playinguser">播放中</span>
+                    <span ng-class="{true:'online',false:''}[u.online==true]">{{u.name}}</span>
+                    <span class="label label-primary">{{u.zhuchi?"主":""}}</span>
+                    <span class="label label-success">{{u.playing?"麦":""}}</span><br/>
 
-            </div>
-            <div>
-                <span ng-show="currentuser!=u">接收/发送：{{u.netState.recieved/8|number:0}}k/s  |  {{u.netState.sent/8|number:0}}k/s<br/>延迟：{{u.netState.rtt}}ms<br /></span>
-                <span class="glyphicon glyphicon-play" ng-click="brodcastuser(u)" ng-show="u.hasVideo&&currentuser.zhuchi==true&&u.online" ></span>
+                </div>
+                <div>
+                    <span ng-show="currentuser!=u&&u.online">接收/发送：{{u.netState.recieved/8|number:0}}k/s  |  {{u.netState.sent/8|number:0}}k/s<br/>延迟：{{u.netState.rtt}}ms<br/></span>
+                    <span class="glyphicon glyphicon-play" ng-click="brodcastuser(u)"
+                          ng-show="u.hasVideo&&currentuser.zhuchi==true&&u.online"></span>
+                </div>
             </div>
         </div>
-        <div id="me"></div>
+        <div role="tabpanel" ng-class="{true:'active',false:''}[tab=='chat']" class="tab-pane" id="chat">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon1"
+                       ng-model="chatmsg">
+                <span class="input-group-btn">
+                <button class="btn btn-default" id="basic-addon1" ng-click="sendChatMsg()">Send</button>
+      </span>
+            </div>
+            <pre>{{log}}</pre>
+        </div>
     </div>
+</div>
+<div id="me"></div>
 </body>
 <script src="/libs/jquery/jquery-1.11.3.min.js"></script>
 <script src="/libs/bs/js/bootstrap.min.js"></script>

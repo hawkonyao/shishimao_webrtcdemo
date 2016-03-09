@@ -36,16 +36,20 @@ app.service('Users', function ($http) {
 });
 app.controller("rtcCtl", function ($scope, $http, $location, Users) {
     $scope.users = Users.getList();
+    $scope.log="";
     $scope.currentuser = Users.getUser($location.path().replace("/", ""));
+    $scope.addlog = function (msg) {
 
+        $scope.log += "\r\n" + msg;
+    }
     $scope.setonline = function (user) {
         if (user == null)return;
-        console.log(JSON.stringify(user));
+        $scope.addlog (user.name + "上线");
         user.online = true;
         $scope.$applyAsync(user.online);
     };
     $scope.setoffline = function (user) {
-        console.log(JSON.stringify(user));
+        $scope.addlog (user.name + "下线");
         user.online = false;
         $scope.$applyAsync(user.online);
     };
@@ -101,7 +105,7 @@ app.controller("rtcCtl", function ($scope, $http, $location, Users) {
                     name: user.name,
                     token: user.token
                 };
-            console.log(user.netState);
+            //console.log(user.netState);
 
         })
         r_channel.on('stream', function (stream) {
@@ -124,6 +128,10 @@ app.controller("rtcCtl", function ($scope, $http, $location, Users) {
             var usr = Users.getUserByToken(msg.playing);
             $scope.playUser(usr);
         }
+        if(msg.chat){
+            var usr = Users.getUserByToken(token);
+            $scope.addlog(usr.name+":"+msg.msg);
+        }
     });
     $scope.brodcastuser = function (user) {
         if ($scope.playinguser == user)return;
@@ -131,7 +139,6 @@ app.controller("rtcCtl", function ($scope, $http, $location, Users) {
         $scope.playUser(user);
     }
     $scope.playUser = function (user) {
-
         if ($scope.playinguser == user)return;
         if ($scope.playinguser && $scope.playinguser.stream)
             $scope.playinguser.stream.stop();
@@ -143,6 +150,11 @@ app.controller("rtcCtl", function ($scope, $http, $location, Users) {
         displayStream(user.stream);
         $scope.playinguser = user;
         $scope.$applyAsync($scope.playinguser);
+        $scope.addlog ("主屏切换到"+user.name);
+    }
+    $scope.sendChatMsg=function() {
+        $scope.session.sendMessage($scope.currentuser.token, JSON.stringify({chat:true, msg:$scope.chatmsg}));
+        $scope.addlog("我:"+$scope.chatmsg);
     }
     $scope.initStream = function (options, callback) {
         localStream = new RTCat.Stream(options);
