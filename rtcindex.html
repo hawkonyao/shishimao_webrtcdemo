@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" ng-app="app">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href="/libs/bs/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/libs/jquery-ui-1.11.4/jquery-ui.min.css" rel="stylesheet" />
+    <link href="/libs/angular-chart/angular-chart.min.css" rel="stylesheet" />
+    <title>网络视频聊天室-demo版</title>
+    <style>
+        #users {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+            width: 300px;
+            background: #ebedc0;
+        }
+
+        .user {
+            margin: 5px;
+            background-color: #fff;
+            min-height: 50px;
+            padding: 3px;
+            color: #808080;
+            font-size: 16px;
+            font-weight: bolder;
+        }
+
+        .online {
+            color: #108720;
+        }
+
+        .currentuser {
+            border:1px solid #006dcc;
+        }
+        #media {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            right: 300px;
+            background:#dbc4e2;
+        }
+        #media h2 {
+            position:absolute;
+
+        }
+        video {
+            width:100%;
+            height:100%;
+        }
+        #me {
+            position:absolute;
+            bottom:0px;
+            right:0px;
+            width:300px;
+        }
+        .label-blue {
+            color:#fff;
+            background-color: #002a80;
+        }
+    </style>
+</head>
+<body ng-controller="rtcCtl">
+    <div id="media">
+        <h2>{{playinguser.name}}</h2>
+    </div>
+    <div id="users">
+        <div ng-repeat="u in users" class="user" ng-class="{true:'currentuser',false:''}[u.name==$parent.currentuser.name]">
+            <div>
+                <span class="label label-blue" ng-show="u.online">在线</span>
+                <span class="label label-blue" ng-show="u==$parent.playinguser">播放中</span>
+                <span ng-class="{true:'online',false:''}[u.online==true]">{{u.name}}</span>
+                <span class="label label-primary">{{u.zhuchi?"主":""}}</span>
+                <span class="label label-success">{{u.playing?"麦":""}}</span><br/>
+
+            </div>
+            <div>
+                <span ng-show="currentuser!=u">接收/发送：{{u.netState.recieved/8|number:0}}k/s  |  {{u.netState.sent/8|number:0}}k/s<br/>延迟：{{u.netState.rtt}}ms<br /></span>
+                <span class="glyphicon glyphicon-play" ng-click="brodcastuser(u)" ng-show="u.hasVideo&&currentuser.zhuchi==true&&u.online" ></span>
+            </div>
+        </div>
+        <div id="me"></div>
+    </div>
+</body>
+<script src="/libs/jquery/jquery-1.11.3.min.js"></script>
+<script src="/libs/bs/js/bootstrap.min.js"></script>
+<script src="/libs/angular/angular.min.js"></script>
+<script src="/libs/angular/angular-route.min.js"></script>
+<!-- 实时猫 RealTimeCat JavaScript SDK -->
+<script src="/libs/webrtc/realtimecat-0.2.min.js"></script>
+<script src="webrtc.js"></script>
+</html>
