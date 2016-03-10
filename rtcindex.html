@@ -33,7 +33,7 @@
             border: 1px solid #006dcc;
         }
 
-        #media {
+        #main {
             position: absolute;
             top: 0px;
             left: 0px;
@@ -42,7 +42,7 @@
             background: #dbc4e2;
         }
 
-        #media h2 {
+        #main h2 {
             position: absolute;
 
         }
@@ -52,7 +52,7 @@
             height: 100%;
         }
 
-        #me {
+        #second {
             position: absolute;
             bottom: 0px;
             right: 0px;
@@ -70,7 +70,7 @@
     </style>
 </head>
 <body ng-controller="rtcCtl">
-<div id="media">
+<div id="main">
     <h2>当前播放：{{playinguser.name}}</h2>
 </div>
 <div id="users">
@@ -95,8 +95,18 @@
                 <div>
                     <span ng-show="currentuser!=u&&u.online">接收/发送：{{u.netState.recieved/8|number:0}}k/s  |  {{u.netState.sent/8|number:0}}k/s<br/>延迟：{{u.netState.rtt}}ms<br/></span>
                     <span class="glyphicon glyphicon-play" ng-click="brodcastuser(u)"
-                          ng-show="u.hasVideo&&currentuser.zhuchi==true&&u.online"></span>
+                          ng-show="currentuser.zhuchi==true&&u.online"></span>
+
                 </div>
+            </div>
+            <div class="btn-group" role="group" aria-label="" ng-show="currentuser==playinguser">
+                <button type="button" class="btn btn-default" ng-click="shareCam()">Cam</button>
+                <button type="button" class="btn btn-default" ng-click="shareScreen()">Screen</button>
+                <button type="button" class="btn btn-default" ng-click="change()">Change</button>
+                <button type="button" class="btn btn-default" ng-click="stopCam()">StopCam</button>
+                <button type="button" class="btn btn-default" ng-click="stopScreen()">StopScreen</button>
+                <button type="button" class="btn btn-default" ng-click="stopShare()">Stop</button>
+                <button type="button" class="btn btn-default" ng-click="toggleVideo()">Black</button>
             </div>
         </div>
         <div role="tabpanel" ng-class="{true:'active',false:''}[tab=='chat']" class="tab-pane" id="chat">
@@ -111,7 +121,8 @@
         </div>
     </div>
 </div>
-<div id="me"></div>
+<div id="second">
+</div>
 </body>
 <script src="/libs/jquery/jquery-1.11.3.min.js"></script>
 <script src="/libs/bs/js/bootstrap.min.js"></script>
